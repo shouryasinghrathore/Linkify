@@ -1,6 +1,7 @@
 const shortid = require('shortid');
 const URL = require('../models/url')
-
+const mongoose = require('mongoose')
+//generate a unique link
 async function handleGenerateNewShortUrl(req, res) {
     try {
         const { url } = req.body;
@@ -31,6 +32,7 @@ async function handleGenerateNewShortUrl(req, res) {
     }
 
 }
+//redirection route
 async function redirectShortid(req, res) {
     try {
         const shortId = req.params.shortId;
@@ -58,6 +60,7 @@ async function redirectShortid(req, res) {
         )
     }
 }
+//analytics
 async function handleAnalytics(req, res) {
     try {
         const id = req.params.id;
@@ -85,7 +88,27 @@ async function handleAnalytics(req, res) {
         })
     }
 }
+// delete link //
+async function deleteLink(req, res) {
+    try {
+        const id = req.params.id
+        const result = await URL.findOneAndDelete({ shortId: id })
+        if (!result) {
+            return res.json({
+                result: "link not found",
+            })
+        }
+        return res.status(200).json({
+            sucess: true,
+        })
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            sucess: false,
+            err: err
+        })
+    }
+}
 
-
-module.exports = { handleGenerateNewShortUrl, redirectShortid, handleAnalytics };
+module.exports = { handleGenerateNewShortUrl, redirectShortid, handleAnalytics, deleteLink };
 
